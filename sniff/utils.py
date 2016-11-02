@@ -23,6 +23,8 @@ import hashlib
 
 fbSniffAppId = "284344261951594"
 fbSniffBetaAppId = "676580649156001"
+googleSniffClientId = "672735175799-07jpi7dr11iq8ehlh7ps8i3131c4dtnm.apps.googleusercontent.com"
+googleSniffBetaClientId = "506586701904-5ndfiutu8ro05lkuvm0pqiv0feuv40iv.apps.googleusercontent.com"
 
 def crypt_password(raw_password):
 	if raw_password is None:
