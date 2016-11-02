@@ -27,7 +27,7 @@ class User(models.Model):
     #     print(validated_data)
 
     def save(self, *args, **kwargs):
-        if not self.token and not self.google_token and not self.linkedin_token:
+        if not self.token:
             self.token = self.generate_token()
     	if self.displayname is None or self.displayname == "":
     		self.displayname = self.first_name + " " + self.last_name
@@ -56,7 +56,7 @@ class User(models.Model):
     	elif google_userId != "":
     		return self.google_userId == google_userId
     	elif linkedin_token != "":
-			return self.linkedin_token == linkedin_token
+			return True
     	return False
 
 

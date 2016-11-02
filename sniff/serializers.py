@@ -31,6 +31,8 @@ class UserSerializer(ModelSerializer):
 		fb_userId = ""
 		google_userId = ""
 		linkedin_token = ""
+		linkedin_real_token = ""
+
 		if 'password' in validated_data:
 			password = validated_data["password"]
 		elif 'fb_userId' in validated_data:
@@ -39,16 +41,21 @@ class UserSerializer(ModelSerializer):
 			google_userId = validated_data["google_userId"]
 		elif 'linkedin_token' in validated_data:
 			linkedin_token = validated_data["linkedin_token"]
-
+			url = 'https://www.linkedin.com/oauth/v2/accessToken'
+			payload = {'grant_type': 'authorization_code', 'client_secret': linkedinClientSecret, 'client_id': linkedinClientId, 'code': linkedin_token, 'redirect_uri': linkedinRedirectUri}
+			json = requests.get(url, params=payload).json()
+			if 'access_token' in json:				
+				linkedin_real_token = json["access_token"]
+			else:
+				raise ValidationError("Problem with Linkedin authentication.")
+				return
 		if password != "":
 			password_is_valid = validatePassword(password)
 			if password_is_valid != True:
 				raise ValidationError(password_is_valid)
 				return
 			validated_data["password"] = crypt_password(validated_data["password"])
-		elif linkedin_token != "": 
-			validated_data["linkedin_token"] = linkedin_token
-		elif fb_userId == "" and google_userId == "" :
+		elif fb_userId == "" and google_userId == "" and linkedin_real_token == "":
 			raise ValidationError("Password is required to create an account.")
 			return
 		return User.objects.create(**validated_data)
@@ -82,10 +89,13 @@ class UserLoginSerializer(ModelSerializer):
 			raise ValidationError("This email is not valid.")
 		
 		password = ""
+		fb_userId = ""
 		fb_token = ""
 		google_token = ""
+		google_userId = ""
 		linkedin_token = ""
-		fb_userId = ""
+		linkedin_real_token = ""
+
 		if 'password' in data:
 			password = data["password"]
 		elif 'fb_token' in data:
@@ -98,7 +108,7 @@ class UserLoginSerializer(ModelSerializer):
 				if 'id' in json:
 					appId = json["id"]
 					if matchAppId(appId) == False:
-						raise ValidationError("Problem with Facebook login. If you don't have an account, sign up.")
+						raise ValidationError("Problem with Facebook authentication. If you don't have an account, sign up.")
 						return
 					#post to https://graph.facebook.com/me?fields=id&access_token= fb_token
 					url = 'https://graph.facebook.com/me?fields=id&access_token='+fb_token # Set destination URL here
@@ -107,25 +117,30 @@ class UserLoginSerializer(ModelSerializer):
 						raise ValidationError("Problem with Facebook login. If you don't have an account, sign up.")
 						return
 				else:
-					raise ValidationError("Problem with Facebook login.")
+					raise ValidationError("Problem with Facebook authentication.")
 			else: 
-				raise ValidationError("Problem with Facebook login.")
-
+				raise ValidationError("Problem with Facebook authentication.")
 		elif 'google_token' in data:
 			google_token = data["google_token"]
-			google_userId=verifyGoogle(google_token)
-			print("\n\n\n")
-			print(google_userId)
-			print("\n\n\n")
+			google_userId = verifyGoogle(google_token)
+			if google_userId != data["google_userId"]: 
+				raise ValidationError("Problem with Google authentication.")
 
 		elif 'linkedin_token' in data:
 			linkedin_token = data["linkedin_token"]
-
+			print
+			url = 'https://www.linkedin.com/oauth/v2/accessToken'
+			payload = {'grant_type': 'authorization_code', 'client_secret': linkedinClientSecret, 'client_id': linkedinClientId, 'code': linkedin_token, 'redirect_uri': linkedinRedirectUri}
+			json = requests.get(url, params=payload).json()
+			if 'access_token' in json:				
+				linkedin_real_token = json["access_token"]
+			else:
+				raise ValidationError("Problem with Linkedin authentication.")
 		#if user is logging in with facebook
 		if user_obj:
-			if not user_obj.check_authentication(password,fb_userId,google_token,linkedin_token):
+			if not user_obj.check_authentication(password,fb_userId,google_userId,linkedin_real_token):
 				raise ValidationError("Incorrect credentials, please try again.")
-		if user_obj.get_token() == False and fb_userId == False and google_token == False and linkedin_token == False:
+		if user_obj.get_token() == False and fb_userId == False and google_userId == False and linkedin_real_token == False:
 			raise ValidationError("Problem with login, please try again.")
 		token = ""
 		if user_obj.get_token() != False:
@@ -139,25 +154,12 @@ class UserLoginSerializer(ModelSerializer):
 		returnData["created_at"] = user_obj.created_at
 		returnData["user_id"] = user_obj.user_id
 		# data["fb_userId"] = user_obj.fb_userId
-		returnData["google_token"] = user_obj.google_token
+		returnData["google_userId"] = user_obj.google_userId
 		returnData["linkedin_token"] = user_obj.linkedin_token
 		returnData["password"] = user_obj.password
 		return returnData
 
 
-"""
-{
-"email": "1aendrea.ferrando@icloud.com",
-"password": "mypsw"
-}
-
-{
-    "first_name": "Andrea",
-    "last_name": "Ferrando",
-    "email": "ea.ferrando@icloud.com",
-    "password": "ppp"
-}
-"""
 
 
 
