@@ -15,15 +15,14 @@ class User(models.Model):
     password = models.CharField(verbose_name="Password", max_length=50,blank=True)
     user_id =  models.AutoField(primary_key=True)
     token = models.CharField(max_length=400,blank=True)
+    fb_userId = models.CharField(max_length=40,blank=True)
     fb_token = models.CharField(max_length=400,blank=True)
     google_token = models.CharField(max_length=400,blank=True)
     linkedin_token = models.CharField(max_length=400,blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
-        if self.fb_token or self.google_token or self.linkedin_token:
-            print()
-        elif not self.token:
+        if not self.token and not self.google_token and not self.linkedin_token:
             self.token = self.generate_token()
     	if self.displayname is None or self.displayname == "":
     		self.displayname = self.first_name + " " + self.last_name
@@ -44,13 +43,15 @@ class User(models.Model):
             return False
         return self.token
 
-    def check_authentication(self, password, fb_token, google_token, linkedin_token):
+    def check_authentication(self, password, fb_userId, google_token, linkedin_token):
     	if password != "":
     		return self.check_password(password)
-    	elif fb_token != "":
-    		return self.fb_token == fb_token
+    	elif fb_userId != "":
+    		return self.fb_userId == fb_userId
     	elif google_token != "":
     		return self.google_token == google_token
     	elif linkedin_token != "":
 			return self.linkedin_token == linkedin_token
     	return False
+
+

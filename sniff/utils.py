@@ -19,9 +19,10 @@
 
 # http://sniff.us-west-2.elasticbeanstalk.com/
 
-
-
 import hashlib
+
+fbSniffAppId = "284344261951594"
+fbSniffBetaAppId = "676580649156001"
 
 def crypt_password(raw_password):
 	if raw_password is None:
@@ -34,3 +35,8 @@ def validatePassword(password):
     if len(password) < 6:
         return "Password must have at least 6 characters"
     return True
+
+def matchAppId(id):
+	if id == fbSniffBetaAppId or id == fbSniffAppId:
+		return True
+	return False

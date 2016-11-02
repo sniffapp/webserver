@@ -8,6 +8,9 @@ from django.core.exceptions import ValidationError
 from .models import User
 from .utils import *
 
+import requests
+
+
 class UserSerializer(ModelSerializer):
 
 	class Meta:
@@ -26,13 +29,13 @@ class UserSerializer(ModelSerializer):
 			raise ValidationError("Email is required to create an account.")
 
 		password = ""
-		fb_token = ""
+		fb_userId = ""
 		google_token = ""
 		linkedin_token = ""
 		if 'password' in validated_data:
 			password = validated_data["password"]
-		elif 'fb_token' in validated_data:
-			fb_token = validated_data["fb_token"]
+		elif 'fb_userId' in validated_data:
+			fb_userId = validated_data["fb_userId"]
 		elif 'google_token' in validated_data:
 			google_token = validated_data["google_token"]
 		elif 'linkedin_token' in validated_data:
@@ -44,13 +47,11 @@ class UserSerializer(ModelSerializer):
 				raise ValidationError(password_is_valid)
 				return
 			validated_data["password"] = crypt_password(validated_data["password"])
-		elif fb_token != "": 
-			validated_data["fb_token"] = fb_token
 		elif google_token != "": 
 			validated_data["google_token"] = google_token
 		elif linkedin_token != "": 
 			validated_data["linkedin_token"] = linkedin_token
-		else:
+		elif fb_userId == "":
 			raise ValidationError("Password is required to create an account.")
 			return
 
@@ -88,10 +89,32 @@ class UserLoginSerializer(ModelSerializer):
 		fb_token = ""
 		google_token = ""
 		linkedin_token = ""
+		fb_userId = ""
 		if 'password' in data:
 			password = data["password"]
 		elif 'fb_token' in data:
-			fb_token = data["fb_token"]
+			if 'fb_userId' in data:
+				fb_token = data["fb_token"]
+				fb_userId = data["fb_userId"]
+				#post request to https://graph.facebook.com/app/?fb_token
+				url = 'https://graph.facebook.com/app/?access_token='+fb_token # Set destination URL here
+				json = requests.get(url).json()
+				if 'id' in json:
+					appId = json["id"]
+					if matchAppId(appId) == False:
+						raise ValidationError("Problem with Facebook login. If you don't have an account, sign up.")
+						return
+					#post to https://graph.facebook.com/me?fields=id&access_token= fb_token
+					url = 'https://graph.facebook.com/me?fields=id&access_token='+fb_token # Set destination URL here
+					json2 = requests.get(url).json()
+					if json2["id"] != fb_userId:
+						raise ValidationError("Problem with Facebook login. If you don't have an account, sign up.")
+						return
+				else:
+					raise ValidationError("Problem with Facebook login.")
+			else: 
+				raise ValidationError("Problem with Facebook login.")
+
 		elif 'google_token' in data:
 			google_token = data["google_token"]
 		elif 'linkedin_token' in data:
@@ -99,24 +122,26 @@ class UserLoginSerializer(ModelSerializer):
 
 		#if user is logging in with facebook
 		if user_obj:
-			if not user_obj.check_authentication(password,fb_token,google_token,linkedin_token):
+			if not user_obj.check_authentication(password,fb_userId,google_token,linkedin_token):
 				raise ValidationError("Incorrect credentials, please try again.")
-		if user_obj.get_token() == False and fb_token == False and google_token == False and linkedin_token == False:
+		if user_obj.get_token() == False and fb_userId == False and google_token == False and linkedin_token == False:
 			raise ValidationError("Problem with login, please try again.")
 		token = ""
 		if user_obj.get_token() != False:
 			token = user_obj.get_token()
-		data["token"] = token
-		data["first_name"] = user_obj.first_name
-		data["last_name"] = user_obj.last_name
-		data["displayname"] = user_obj.displayname
-		data["created_at"] = user_obj.created_at
-		data["user_id"] = user_obj.user_id
-		data["fb_token"] = user_obj.fb_token
-		data["google_token"] = user_obj.google_token
-		data["linkedin_token"] = user_obj.linkedin_token
-		data["password"] = user_obj.password
-		return data
+		returnData = dict()
+		returnData["token"] = token
+		returnData["email"] = email
+		returnData["first_name"] = user_obj.first_name
+		returnData["last_name"] = user_obj.last_name
+		returnData["displayname"] = user_obj.displayname
+		returnData["created_at"] = user_obj.created_at
+		returnData["user_id"] = user_obj.user_id
+		# data["fb_userId"] = user_obj.fb_userId
+		returnData["google_token"] = user_obj.google_token
+		returnData["linkedin_token"] = user_obj.linkedin_token
+		returnData["password"] = user_obj.password
+		return returnData
 
 
 """

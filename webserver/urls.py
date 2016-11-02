@@ -27,6 +27,7 @@ urlpatterns = [
     #requires Authorization - user token
     url(r'^api/user/(?P<pk>[0-9]+)$', views.ListUser.as_view()),
     url(r'^api/login/$', views.ListLogin.as_view()),
+
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
