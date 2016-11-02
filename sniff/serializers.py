@@ -30,14 +30,14 @@ class UserSerializer(ModelSerializer):
 
 		password = ""
 		fb_userId = ""
-		google_token = ""
+		google_userId = ""
 		linkedin_token = ""
 		if 'password' in validated_data:
 			password = validated_data["password"]
 		elif 'fb_userId' in validated_data:
 			fb_userId = validated_data["fb_userId"]
-		elif 'google_token' in validated_data:
-			google_token = validated_data["google_token"]
+		elif 'google_userId' in validated_data:
+			google_userId = validated_data["google_userId"]
 		elif 'linkedin_token' in validated_data:
 			linkedin_token = validated_data["linkedin_token"]
 
@@ -47,14 +47,19 @@ class UserSerializer(ModelSerializer):
 				raise ValidationError(password_is_valid)
 				return
 			validated_data["password"] = crypt_password(validated_data["password"])
-		elif google_token != "": 
-			validated_data["google_token"] = google_token
 		elif linkedin_token != "": 
 			validated_data["linkedin_token"] = linkedin_token
-		elif fb_userId == "":
+		elif fb_userId == "" and google_userId == "" :
 			raise ValidationError("Password is required to create an account.")
 			return
 
+		returnedData = dict()
+		returnedData["email"] = email
+		returnedData["password"] = password
+		returnedData["first_name"] = validated_data["first_name"]
+		returnedData["last_name"] = validated_data["last_name"]
+		returnedData["displayname"] = validated_data["displayname"]
+		returnedData["token"] = self.token
 		return User.objects.create(**validated_data)
 
 class UserLoginSerializer(ModelSerializer):
