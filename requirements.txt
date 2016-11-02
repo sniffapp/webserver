@@ -1,3 +1,12 @@
 Django==1.10.2
 djangorestframework==3.5.1
 requests==2.2.1
+flask
+keyring
+mock
+pycrypto>=2.6
+pyopenssl>=0.14
+python-gflags
+pyyaml
+webapp2
+WebOb
