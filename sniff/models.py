@@ -21,7 +21,9 @@ class User(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
-    	if not self.token:
+        if self.fb_token or self.google_token or self.linkedin_token:
+            print()
+        elif not self.token:
             self.token = self.generate_token()
     	if self.displayname is None or self.displayname == "":
     		self.displayname = self.first_name + " " + self.last_name

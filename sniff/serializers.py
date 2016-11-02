@@ -63,7 +63,7 @@ class UserLoginSerializer(ModelSerializer):
 	last_name = serializers.CharField(allow_blank=True, read_only=True)
 	displayname = serializers.CharField(allow_blank=True, read_only=True)
 	email = serializers.EmailField()
-	password = serializers.CharField()
+	password = serializers.CharField(allow_blank=True)
 	user_id =  serializers.IntegerField(read_only=True)
 	created_at = serializers.DateTimeField(read_only=True)
 
