@@ -11,14 +11,15 @@ import hashlib
 from oauth2client import client, crypt
 from django.core.exceptions import ValidationError
 
-debug_beta = True
+debug_beta = False
 fbSniffAppId = "284344261951594"
 fbSniffBetaAppId = "676580649156001"
 googleSniffIOSClientId = "672735175799-07jpi7dr11iq8ehlh7ps8i3131c4dtnm.apps.googleusercontent.com"
 googleSniffBetaIOSClientId = "506586701904-5ndfiutu8ro05lkuvm0pqiv0feuv40iv.apps.googleusercontent.com"
 linkedinClientId = "77i9c9e4kz0s87"
 linkedinClientSecret = "yLULfFx1a4yPG7qx"
-linkedinRedirectUri = "http://sniff.us-west-2.elasticbeanstalk.com/api/login/linkedin/"
+linkedinSniffRedirectUri = "http://sniff.us-west-2.elasticbeanstalk.com/api/login/linkedin/"
+linkedinSniffBetaRedirectUri = "http://sniff.us-west-2.elasticbeanstalk.com/api/login/linkedin/"
 
 def crypt_password(raw_password):
 	if raw_password is None:
