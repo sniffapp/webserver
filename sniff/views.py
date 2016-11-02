@@ -104,7 +104,7 @@ class ListUser(APIView):
 		user.delete()
 		return Response(True,status=HTTP_200_OK)
 
-#Login
+#/login
 class ListLogin(APIView):
 	
 	def post(self, request, *args, **kwargs):
