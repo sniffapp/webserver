@@ -43,8 +43,8 @@ class UserSerializer(ModelSerializer):
 			linkedin_token = validated_data["linkedin_token"]
 			url = 'https://www.linkedin.com/oauth/v2/accessToken'
 			linkedinRedirectUri = linkedinSniffRedirectUri
-			if isLocalHost == true:
-				linkedinRedirectUri = linkedinSniffBetaRedirectUri
+			if isLocalHost == True:
+				linkedinRedirectUri = linkedinSniffLocalHostRedirectUri
 			payload = {'grant_type': 'authorization_code', 'client_secret': linkedinClientSecret, 'client_id': linkedinClientId, 'code': linkedin_token, 'redirect_uri': linkedinRedirectUri}
 			json = requests.get(url, params=payload).json()
 			if 'access_token' in json:				
@@ -134,8 +134,8 @@ class UserLoginSerializer(ModelSerializer):
 			print
 			url = 'https://www.linkedin.com/oauth/v2/accessToken'
 			linkedinRedirectUri = linkedinSniffRedirectUri
-			if isLocalHost == true:
-				linkedinRedirectUri = linkedinSniffBetaRedirectUri
+			if isLocalHost == True:
+				linkedinRedirectUri = linkedinSniffLocalHostRedirectUri
 			payload = {'grant_type': 'authorization_code', 'client_secret': linkedinClientSecret, 'client_id': linkedinClientId, 'code': linkedin_token, 'redirect_uri': linkedinRedirectUri}
 			json = requests.get(url, params=payload).json()
 			if 'access_token' in json:				
