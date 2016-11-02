@@ -53,7 +53,7 @@ class UserSerializer(ModelSerializer):
 		else:
 			raise ValidationError("Password is required to create an account.")
 			return
-			
+
 		return User.objects.create(**validated_data)
 
 class UserLoginSerializer(ModelSerializer):
@@ -63,7 +63,7 @@ class UserLoginSerializer(ModelSerializer):
 	last_name = serializers.CharField(allow_blank=True, read_only=True)
 	displayname = serializers.CharField(allow_blank=True, read_only=True)
 	email = serializers.EmailField()
-	password = serializers.CharField(allow_blank=True)
+	password = serializers.CharField(allow_blank=True,required=False)
 	user_id =  serializers.IntegerField(read_only=True)
 	created_at = serializers.DateTimeField(read_only=True)
 
@@ -75,7 +75,6 @@ class UserLoginSerializer(ModelSerializer):
 	def validate(self, data):
 		user_obj = None
 		email = data.get("email", None)
-
 		if not email:
 			raise ValidationError("Email is required to login.")
 		
@@ -102,9 +101,11 @@ class UserLoginSerializer(ModelSerializer):
 		if user_obj:
 			if not user_obj.check_authentication(password,fb_token,google_token,linkedin_token):
 				raise ValidationError("Incorrect credentials, please try again.")
-		token = user_obj.get_token()
-		if token == False:
+		if user_obj.get_token() == False and fb_token == False and google_token == False and linkedin_token == False:
 			raise ValidationError("Problem with login, please try again.")
+		token = ""
+		if user_obj.get_token() != False:
+			token = user_obj.get_token()
 		data["token"] = token
 		data["first_name"] = user_obj.first_name
 		data["last_name"] = user_obj.last_name
