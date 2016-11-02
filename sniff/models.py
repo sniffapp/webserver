@@ -18,13 +18,13 @@ class User(models.Model):
     fb_userId = models.CharField(max_length=40,blank=True)
     fb_token = models.CharField(max_length=400,blank=True)
     google_userId = models.CharField(max_length=40,blank=True)
-    google_token = models.CharField(max_length=400,blank=True)
+    google_token = models.CharField(max_length=2000,blank=True)
     linkedin_token = models.CharField(max_length=400,blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def create(self,validated_data):
-        print("\n\n\n INSIDE \n\n\n")
-        print(validated_data)
+    # def create(self,validated_data):
+    #     print("\n\n\n INSIDE \n\n\n")
+    #     print(validated_data)
 
     def save(self, *args, **kwargs):
         if not self.token and not self.google_token and not self.linkedin_token:
