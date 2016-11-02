@@ -27,7 +27,6 @@ class UserSerializer(ModelSerializer):
 		email = validated_data.get("email", None)
 		if not email:
 			raise ValidationError("Email is required to create an account.")
-
 		password = ""
 		fb_userId = ""
 		google_userId = ""
@@ -52,14 +51,6 @@ class UserSerializer(ModelSerializer):
 		elif fb_userId == "" and google_userId == "" :
 			raise ValidationError("Password is required to create an account.")
 			return
-
-		returnedData = dict()
-		returnedData["email"] = email
-		returnedData["password"] = password
-		returnedData["first_name"] = validated_data["first_name"]
-		returnedData["last_name"] = validated_data["last_name"]
-		returnedData["displayname"] = validated_data["displayname"]
-		returnedData["token"] = self.token
 		return User.objects.create(**validated_data)
 
 class UserLoginSerializer(ModelSerializer):

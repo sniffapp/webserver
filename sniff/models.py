@@ -22,6 +22,10 @@ class User(models.Model):
     linkedin_token = models.CharField(max_length=400,blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def create(self,validated_data):
+        print("\n\n\n INSIDE \n\n\n")
+        print(validated_data)
+
     def save(self, *args, **kwargs):
         if not self.token and not self.google_token and not self.linkedin_token:
             self.token = self.generate_token()
