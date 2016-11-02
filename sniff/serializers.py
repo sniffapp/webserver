@@ -42,6 +42,7 @@ class UserSerializer(ModelSerializer):
 			password_is_valid = validatePassword(password)
 			if password_is_valid != True:
 				raise ValidationError(password_is_valid)
+				return
 			validated_data["password"] = crypt_password(validated_data["password"])
 		elif fb_token != "": 
 			validated_data["fb_token"] = fb_token
@@ -51,7 +52,8 @@ class UserSerializer(ModelSerializer):
 			validated_data["linkedin_token"] = linkedin_token
 		else:
 			raise ValidationError("Password is required to create an account.")
-
+			return
+			
 		return User.objects.create(**validated_data)
 
 class UserLoginSerializer(ModelSerializer):
