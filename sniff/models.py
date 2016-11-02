@@ -17,6 +17,7 @@ class User(models.Model):
     token = models.CharField(max_length=400,blank=True)
     fb_userId = models.CharField(max_length=40,blank=True)
     fb_token = models.CharField(max_length=400,blank=True)
+    google_userId = models.CharField(max_length=40,blank=True)
     google_token = models.CharField(max_length=400,blank=True)
     linkedin_token = models.CharField(max_length=400,blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -43,13 +44,13 @@ class User(models.Model):
             return False
         return self.token
 
-    def check_authentication(self, password, fb_userId, google_token, linkedin_token):
+    def check_authentication(self, password, fb_userId, google_userId, linkedin_token):
     	if password != "":
     		return self.check_password(password)
     	elif fb_userId != "":
     		return self.fb_userId == fb_userId
-    	elif google_token != "":
-    		return self.google_token == google_token
+    	elif google_userId != "":
+    		return self.google_userId == google_userId
     	elif linkedin_token != "":
 			return self.linkedin_token == linkedin_token
     	return False

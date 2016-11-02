@@ -117,6 +117,11 @@ class UserLoginSerializer(ModelSerializer):
 
 		elif 'google_token' in data:
 			google_token = data["google_token"]
+			google_userId=verifyGoogle(google_token)
+			print("\n\n\n")
+			print(google_userId)
+			print("\n\n\n")
+
 		elif 'linkedin_token' in data:
 			linkedin_token = data["linkedin_token"]
 
