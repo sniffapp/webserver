@@ -38,12 +38,6 @@ class ListUsers(APIView):
 		serializer = UserSerializer(data=request.data)
 		if serializer.is_valid():
 			serializer.save()
-			print("SERIALIZER")
-			print(serializer)
-			print("SERIALIZER.DATA")
-			print(serializer.data)
-			print("SERIALIZER.ERRORS")
-			print(serializer.errors)
 			return Response(serializer.data, status=HTTP_200_OK)
 		return Resp0nse(serializer.errors, status=400)
 

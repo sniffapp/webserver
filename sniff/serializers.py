@@ -112,6 +112,7 @@ class UserLoginSerializer(ModelSerializer):
 		data["fb_token"] = user_obj.fb_token
 		data["google_token"] = user_obj.google_token
 		data["linkedin_token"] = user_obj.linkedin_token
+		data["password"] = user_obj.password
 		return data
 
 

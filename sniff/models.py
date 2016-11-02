@@ -5,6 +5,7 @@ from django.db import models
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.authtoken.models import Token
+from .utils import *
 
 class User(models.Model):
     first_name = models.CharField(max_length=200,blank=True)
@@ -41,7 +42,7 @@ class User(models.Model):
             return False
         return self.token
 
-    def check_authentication(password, fb_token, google_token, linkedin_token):
+    def check_authentication(self, password, fb_token, google_token, linkedin_token):
     	if password != "":
     		return self.check_password(password)
     	elif fb_token != "":
