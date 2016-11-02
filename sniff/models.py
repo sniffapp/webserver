@@ -12,7 +12,7 @@ class User(models.Model):
     last_name = models.CharField(max_length=200,blank=True)
     displayname = models.CharField(max_length=200,blank=True)
     email = models.EmailField(verbose_name="Email",max_length=200, blank=False, unique=True)
-    password = models.CharField(verbose_name="Password", max_length=50)
+    password = models.CharField(verbose_name="Password", max_length=50,blank=True)
     user_id =  models.AutoField(primary_key=True)
     token = models.CharField(max_length=400,blank=True)
     fb_token = models.CharField(max_length=400,blank=True)

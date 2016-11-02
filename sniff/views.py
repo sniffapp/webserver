@@ -39,7 +39,7 @@ class ListUsers(APIView):
 		if serializer.is_valid():
 			serializer.save()
 			return Response(serializer.data, status=HTTP_200_OK)
-		return Resp0nse(serializer.errors, status=400)
+		return Response(serializer.errors, status=400)
 
 # user/[id]
 class ListUser(APIView):
